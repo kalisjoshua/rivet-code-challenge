@@ -1,0 +1,56 @@
+.ProfileShort {
+    display: flex;
+    float: left;
+    margin: 0;
+    width: 100%;
+    padding: var(--padding);
+}
+
+.ProfileShort:hover {
+    background: gainsboro;
+}
+
+.ProfileShort[data-selected="true"] {
+    background: var(--rivet-blue);
+    color: white;
+}
+
+.ProfileShort[data-selected="true"] figcaption footer {
+    display: none;
+}
+
+.ProfileShort img {
+    border: 1px solid;
+    border-radius: 1em;
+    max-width: 4em;
+    margin-right: 1em;
+    overflow: hidden;
+}
+
+.ProfileShort figcaption {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.ProfileShort figcaption div {
+    flex-grow: 1;
+}
+
+.ProfileShort figcaption footer {
+    text-align: right;
+}
+
+.ProfileShort figcaption footer .View {
+    color: #002345;
+    padding: var(--padding);
+    text-decoration: none;
+}
+
+.ProfileShort figcaption footer .View:after {
+    content: " >>";
+}
+
+.ProfileShort figcaption footer .View:hover {
+    text-decoration: underline;
+}

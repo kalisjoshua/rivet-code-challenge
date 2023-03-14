@@ -1,0 +1,8 @@
+.ClientToken {
+    padding: var(--padding) 0;
+}
+
+.ClientToken input {
+    margin-left: 1em;
+    width: 38em;
+}

@@ -1,0 +1,98 @@
+.ProfileFullView {
+    --border: 1px solid rgba(0, 0, 0, 0.2);
+    --border-bottom: 4px;
+    --input-padding: calc(var(--padding) / 2) 5px;
+}
+
+.ProfileFullView .formField {
+    border: 1px solid transparent;
+    margin-bottom: var(--padding);
+    position: relative;
+}
+
+.ProfileFullView .formField[data-error="true"] {
+    background: pink;
+    border-color: darkred;
+    padding: var(--padding) 0;
+}
+
+.ProfileFullView .formField .fieldError {
+    display: none;
+    margin: 0;
+    margin-top: var(--padding);
+    padding: 0;
+}
+
+.ProfileFullView .formField .fieldError[data-visible="true"] {
+    display: block;
+}
+
+.ProfileFullView button {
+    background: var(--rivet-orange);
+    border: 0;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    float: right;
+    font-size: inherit;
+    padding: var(--padding) calc(var(--padding) * 2);
+}
+
+.ProfileFullView button[disabled] {
+    background: gainsboro;
+}
+
+.ProfileFullView input {
+    border: var(--border);
+    border-bottom-width: var(--border-bottom);
+    padding: var(--input-padding);
+    width: 100%;
+}
+
+.ProfileFullView input[disabled] {
+    background: gainsboro;
+}
+
+.ProfileFullView label {
+    display: block;
+    font-weight: 900;
+    margin-bottom: calc(var(--padding) / 2);
+}
+
+.ProfileFullView select {
+    background: white;
+    border: var(--border);
+    border-bottom-width: var(--border-bottom);
+    margin: 0;
+    padding: var(--input-padding);
+}
+
+.ProfileFullView textarea {
+    border: var(--border);
+    border-bottom-width: var(--border-bottom);
+    display: block;
+    height: 24em;
+    padding: var(--input-padding);
+    width: 100%;
+}
+
+.combined {
+    display: flex;
+    gap: var(--padding);
+}
+
+.combined [data-field="city"] {
+    flex-grow: 1;
+}
+
+.combined [data-field="state"] {
+    flex-shrink: 1;
+}
+
+.combined [data-field="zip"] {
+    flex-shrink: 1;
+}
+
+.combined [data-field="zip"] input {
+    width: 10em;
+}
