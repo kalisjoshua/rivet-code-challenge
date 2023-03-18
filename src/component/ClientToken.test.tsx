@@ -15,8 +15,11 @@ test("change the value", async () => {
 
   render(<ClientToken {...{ setToken, token }} />);
 
-  await userEvent.click(screen.getByPlaceholderText(/API Client Token/i));
+  const element = screen.getByPlaceholderText(/API Client Token/i);
+
+  await userEvent.click(element);
   await userEvent.paste("xyz987");
+  await userEvent.type(element, "{enter}");
 
   expect(token).toBe("xyz987");
   expect(getToken()).toBe("xyz987");
