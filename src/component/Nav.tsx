@@ -12,15 +12,19 @@ type NavProps = {
 };
 
 function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
+  function linkClicked(event: React.SyntheticEvent, id: string) {
+    event.preventDefault();
+    global.history.pushState({}, "", event.currentTarget.getAttribute("href"));
+    setSelected(id);
+  }
+
   return (
     <>
       <div className="create-new">
         <a
-          href="?=new"
+          href="?id=new"
           onClick={(event: React.SyntheticEvent) => {
-            event.preventDefault();
-            global.history.pushState({}, "", "?id=new");
-            setSelected("new");
+            linkClicked(event, "new");
           }}
         >
           Add Rep
@@ -30,26 +34,23 @@ function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
         <ProfileShort
           key={`${i}-${rep.first_name}-${rep.last_name}`}
           onClick={(event: React.SyntheticEvent) => {
-            event.preventDefault();
-            global.history.pushState({}, "", `?id=${rep.id}`);
+            linkClicked(event, rep.id);
 
             client.GET<Profile>(`/profile/${rep.id}`).then((data) => {
-              data.id = "" + data.id;
-              rep.id = "" + rep.id;
+              data.id = data.id.toString();
+              rep.id = rep.id.toString();
 
               if (serialize(rep) !== serialize(data)) {
-                console.log("API version of the resource is different.");
-                console.log(
-                  "\nlocal\n",
-                  serialize(rep),
-                  "\nremote\n",
-                  serialize(data)
-                );
-
                 updateList(true);
-              }
 
-              setSelected(rep.id);
+                // console.log("API version of the resource is different.");
+                // console.log(
+                //   "\nlocal\n",
+                //   serialize(rep),
+                //   "\nremote\n",
+                //   serialize(data)
+                // );
+              }
             });
           }}
           rep={rep}
