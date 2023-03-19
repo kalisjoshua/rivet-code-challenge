@@ -12,29 +12,18 @@ type NavProps = {
 };
 
 function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
-  function linkClicked(event: React.SyntheticEvent, id: string) {
-    event.preventDefault();
-    global.history.pushState({}, "", event.currentTarget.getAttribute("href"));
-    setSelected(id);
-  }
-
   return (
     <>
-      <div className="create-new">
-        <a
-          href="?id=new"
-          onClick={(event: React.SyntheticEvent) => {
-            linkClicked(event, "new");
-          }}
-        >
-          Add Rep
-        </a>
-      </div>
       {list.map((rep, i) => (
         <ProfileShort
           key={`${i}-${rep.first_name}-${rep.last_name}`}
           onClick={(event: React.SyntheticEvent) => {
-            linkClicked(event, rep.id);
+            event.preventDefault();
+            global.history.pushState(
+              {},
+              "",
+              event.currentTarget.getAttribute("href")
+            );
 
             client.GET<Profile>(`/profile/${rep.id}`).then((data) => {
               data.id = data.id.toString();
@@ -51,10 +40,12 @@ function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
                 //   serialize(data)
                 // );
               }
+
+              setSelected(rep.id);
             });
           }}
           rep={rep}
-          selected={rep.id === selected}
+          selected={rep.id.toString() === selected}
         />
       ))}
     </>

@@ -5,8 +5,9 @@ import { ClientToken } from "./component/ClientToken";
 import { Nav } from "./component/Nav";
 import { ProfileFullView } from "./component/ProfileFullView";
 import { emptyProfile, Profile } from "./type/Profile";
-import { clientFactory } from "./util/naiveSDK";
+import { formSubmitFactory } from "./util/profileSubmit";
 import { getRepId } from "./util/getRepId";
+import { clientFactory } from "./util/naiveSDK";
 
 import "./App.css";
 
@@ -23,6 +24,7 @@ function App({ repId, root, token: storedToken }: AppProps) {
       ? ({ ...structuredClone(emptyProfile), id: "new" } as Profile)
       : list.filter((rep) => rep.id.toString() === selected).at(0);
   const client = clientFactory(root, token);
+  // console.log([client.GET]);
   const updateList = (forceUpdate = false) => {
     const up = (s: string) => s.toUpperCase();
 
@@ -52,6 +54,8 @@ function App({ repId, root, token: storedToken }: AppProps) {
   useEffect(() => {
     if (token) {
       updateList();
+    } else {
+      setShowNav(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -62,6 +66,25 @@ function App({ repId, root, token: storedToken }: AppProps) {
         <h1>
           <a href="/">Rivet Rep Roster Review</a>
         </h1>
+
+        {showNav && (
+          <div className="create-new">
+            <a
+              href="?id=new"
+              onClick={(event: React.SyntheticEvent) => {
+                event.preventDefault();
+                global.history.pushState(
+                  {},
+                  "",
+                  event.currentTarget.getAttribute("href")
+                );
+                setSelected("new");
+              }}
+            >
+              Add Rep
+            </a>
+          </div>
+        )}
       </header>
 
       <nav className="App-nav">
@@ -79,7 +102,10 @@ function App({ repId, root, token: storedToken }: AppProps) {
 
       <main className="App-main">
         {active ? (
-          <ProfileFullView client={client} rep={active} update={updateList} />
+          <ProfileFullView
+            formSubmit={formSubmitFactory(client, updateList)}
+            rep={active}
+          />
         ) : (
           <About />
         )}

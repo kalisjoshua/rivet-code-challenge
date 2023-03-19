@@ -2,13 +2,16 @@ import { useEffect, useReducer, useRef, useState } from "react";
 
 import { FieldWrapper } from "./FieldWrapper";
 import { Profile } from "../type/Profile";
-import { SDK } from "../util/naiveSDK";
 import { updateReducer, UpdatePayload } from "../util/profileEdit";
+import { formSubmitFactory } from "../util/profileSubmit";
 import { states, statesCleanValue } from "../util/states";
 
 import "./ProfileFullView.css";
 
-type ProfileFullViewProps = { client: SDK; rep: Profile; update: Function };
+type ProfileFullViewProps = {
+  formSubmit: ReturnType<typeof formSubmitFactory>;
+  rep: Profile;
+};
 
 /**
  * @name MAX_NOTES_SIZE
@@ -45,7 +48,7 @@ const formIsValid = (form: HTMLFormElement) =>
  * @description
  * Renders an HTML form for editing and creating new entries for employees.
  */
-function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
+function ProfileFullView({ formSubmit, rep }: ProfileFullViewProps) {
   const formRef = useRef(null);
   const [buttonEnabled, setEnabled] = useState(false);
   const [{ data, errors }, formChanged] = useReducer(updateReducer, {
@@ -58,29 +61,11 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
   }
 
   const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const form: HTMLFormElement = event.currentTarget;
-
-    // FormData ignores `disabled` fields
-    form.repId.removeAttribute("disabled");
-    const { repId, ...data } = Object.fromEntries(new FormData(form));
-    form.repId.setAttribute("disabled", "true");
-
-    if (formIsValid(form)) {
-      const requestData = {
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      };
-
-      const request = repId
-        ? client.PUT<Profile>(`/profile/${repId}`, requestData)
-        : client.POST<Profile>(`/profile`, requestData);
-
-      request.then(() => {
-        setEnabled(false);
-        update();
-      });
+    if (formIsValid(event.currentTarget)) {
+      formSubmit(event)
+        // on success of submitting the form disable the submit button
+        // untill more edits are made
+        .then(() => setEnabled(false));
     }
   };
 
@@ -94,10 +79,16 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
 
   // noValidate
   return (
-    <form className="ProfileFullView" onSubmit={onSubmit} ref={formRef}>
+    <form
+      className="ProfileFullView"
+      name="ProfileFullView"
+      onSubmit={onSubmit}
+      ref={formRef}
+    >
       <FieldWrapper field="repId">
         <label htmlFor="repId">ID</label>
         <input
+          id="repId"
           name="repId"
           onChange={onChange<HTMLInputElement>}
           disabled={true}
@@ -113,6 +104,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="first_name">First Name</label>
         <input
+          id="first_name"
           maxLength={255}
           name="first_name"
           onChange={onChange<HTMLInputElement>}
@@ -131,6 +123,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="last_name">Last Name</label>
         <input
+          id="last_name"
           maxLength={255}
           name="last_name"
           onChange={onChange<HTMLInputElement>}
@@ -149,6 +142,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="phone">Phone</label>
         <input
+          id="phone"
           maxLength={30}
           name="phone"
           onChange={onChange<HTMLInputElement>}
@@ -172,6 +166,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="email">Email</label>
         <input
+          id="email"
           maxLength={255}
           name="email"
           onChange={onChange<HTMLInputElement>}
@@ -194,6 +189,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="address">Street Address</label>
         <input
+          id="address"
           maxLength={255}
           name="address"
           onChange={onChange<HTMLInputElement>}
@@ -213,6 +209,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
         >
           <label htmlFor="city">City</label>
           <input
+            id="city"
             maxLength={255}
             name="city"
             onChange={onChange<HTMLInputElement>}
@@ -231,6 +228,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
         >
           <label htmlFor="state">State</label>
           <select
+            id="state"
             name="state"
             onChange={onChange<HTMLSelectElement>}
             required
@@ -254,6 +252,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
         >
           <label htmlFor="zip">Zip</label>
           <input
+            id="zip"
             name="zip"
             onChange={onChange<HTMLInputElement>}
             pattern="^\d{5}(?:-?\d{4})?$"
@@ -277,12 +276,13 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="photo">Photo</label>
         <input
+          id="photo"
           maxLength={255}
           name="photo"
           onChange={onChange<HTMLInputElement>}
           pattern="^https?:\/\/.{4,}"
           type="URL"
-          value={data.photo}
+          value={data.photo || ""}
         />
         <p className="fieldError" data-visible={errors?.photo?.pattern}>
           The "Photo" needs to be a valid URL or be left empty.
@@ -295,6 +295,7 @@ function ProfileFullView({ client, rep, update }: ProfileFullViewProps) {
       >
         <label htmlFor="notes">Notes</label>
         <textarea
+          id="notes"
           maxLength={MAX_NOTES_SIZE}
           name="notes"
           onChange={onChange<HTMLTextAreaElement>}

@@ -1,10 +1,6 @@
 import { ReducerResult, UpdatePayload, updateReducer } from "./profileEdit";
 
 describe("updateReducer", () => {
-  if (!global.structuredClone) {
-    global.structuredClone = (obj: Object) => JSON.parse(JSON.stringify(obj));
-  }
-
   test("no validation", () => {
     const initial: ReducerResult = { data: {} };
     const payload: UpdatePayload = { name: "test", value: "foo" };

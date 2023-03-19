@@ -27,12 +27,31 @@
 }
 
 .App-header {
+    display: flex;
     grid-area: header;
 }
 
 .App-header a {
     background: inherit;
     color: inherit;
+    text-decoration: none;
+}
+
+.App-header h1 {
+    flex-grow: 1;
+}
+
+.App-header .create-new {
+    text-align: right;
+}
+
+.App-header .create-new a {
+    background: var(--rivet-orange);
+    border-radius: 6px;
+    color: white;
+    display: inline-block;
+    margin: var(--padding) 0;
+    padding: var(--padding) calc(2 * var(--padding));
     text-decoration: none;
 }
 
@@ -49,24 +68,6 @@
     color: var(--rivet-blue);
     grid-area: nav;
     overflow-y: scroll;
-}
-
-.App-nav .create-new {
-    margin: var(--padding) 0;
-    padding: var(--padding);
-    text-align: right;
-}
-
-.App-nav .create-new a {
-    background: var(--rivet-orange);
-    border-radius: 6px;
-    color: white;
-    padding: var(--padding) calc(2 * var(--padding));
-    text-decoration: none;
-}
-
-.App-nav .create-new a:hover {
-    background: var(--rivet-orange);
 }
 
 .App-nav .help {

@@ -28,17 +28,6 @@ describe("Nav", () => {
     updateList.mockClear();
   });
 
-  test("click Add Rep", async () => {
-    render(<Nav {...{ client, list, selected, setSelected, updateList }} />);
-
-    const element = screen.getByText(/Add Rep/i);
-
-    await userEvent.click(element);
-
-    expect(setSelected).toHaveBeenCalledWith("new");
-    expect(pushStateSpy).toHaveBeenCalledWith({}, "", "?id=new");
-  });
-
   test("click existing Rep (consistent data)", async () => {
     render(<Nav {...{ client, list, selected, setSelected, updateList }} />);
 

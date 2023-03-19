@@ -4,7 +4,7 @@ import { Profile } from "../type/Profile";
 
 import "./ProfileShort.css";
 
-type Expected = {
+type ProfileShortProps = {
   onClick: MouseEventHandler<HTMLAnchorElement>;
   rep: Profile;
   selected: boolean;
@@ -12,7 +12,7 @@ type Expected = {
 
 const fallbackIMG = "https://picsum.photos/id/63/200/200";
 
-function ProfileShort({ onClick, rep, selected }: Expected) {
+function ProfileShort({ onClick, rep, selected }: ProfileShortProps) {
   const name = `${rep.first_name} ${rep.last_name}`;
   const alt = `${name} photo`;
 

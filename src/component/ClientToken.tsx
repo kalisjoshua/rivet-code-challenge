@@ -22,7 +22,7 @@ function ClientToken({ setToken, token }: Props) {
   };
 
   return (
-    <form className="ClientToken" onSubmit={onSubmit}>
+    <form className="ClientToken" name="ClientToken" onSubmit={onSubmit}>
       <input onChange={onChange} placeholder="API Client Token" value={token} />
     </form>
   );
