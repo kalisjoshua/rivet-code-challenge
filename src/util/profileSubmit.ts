@@ -1,5 +1,4 @@
 import { Profile } from "../type/Profile";
-import { formData } from "./formData";
 import { clientFactory } from "./naiveSDK";
 
 /**
@@ -20,11 +19,14 @@ function formSubmitFactory(
     event.preventDefault();
 
     const form: HTMLFormElement = event.currentTarget;
+    const { repId: field } = form.elements as unknown as {
+      repId: HTMLInputElement;
+    };
 
     // FormData ignores `disabled` fields; enable the input for data collection
-    form.repId.removeAttribute("disabled");
-    const { repId, ...data } = formData(form);
-    form.repId.setAttribute("disabled", "true");
+    field.removeAttribute("disabled");
+    const { repId, ...data } = Object.fromEntries(new FormData(form));
+    field.setAttribute("disabled", "true");
 
     const requestData = {
       body: JSON.stringify(data),
