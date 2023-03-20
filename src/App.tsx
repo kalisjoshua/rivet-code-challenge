@@ -45,7 +45,6 @@ function App({ repId, root, token: storedToken }: AppProps) {
 
   useEffect(() => {
     window.addEventListener("popstate", (event) => {
-      console.log(event?.state?.id);
       setSelected(event?.state?.id);
     });
   });
