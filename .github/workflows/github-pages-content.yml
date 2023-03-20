@@ -51,7 +51,7 @@ jobs:
         run: npm run build
 
       - name: Move coverage folder
-        run: mv coverage/ build/
+        run: mv coverage/lcov-report/ build/coverage
 
       - name: Create archive
         shell: bash
