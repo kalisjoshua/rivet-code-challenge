@@ -45,7 +45,7 @@ jobs:
         run: npm test
 
       - name: Run tests
-        run: npm test:coverage
+        run: npm run test:coverage
 
       - name: Build static assets
         run: npm run build
