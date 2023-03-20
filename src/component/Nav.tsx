@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Profile } from "../type/Profile";
 import { SDK } from "../util/naiveSDK";
 import { serialize } from "../util/serialize";
@@ -12,9 +14,35 @@ type NavProps = {
 };
 
 function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
+  const [filterStr, setFilterStr] = useState("");
+
+  function filterNav(rep: Profile) {
+    return !filterStr
+      ? rep
+      : rep.first_name.toLowerCase().includes(filterStr.toLowerCase()) ||
+          rep.last_name.toLowerCase().includes(filterStr.toLowerCase()) ||
+          rep.city.toLowerCase().includes(filterStr.toLowerCase()) ||
+          rep.state.toLowerCase().includes(filterStr.toLowerCase());
+  }
+
+  function onChange(event: React.SyntheticEvent) {
+    event.preventDefault();
+
+    setFilterStr((event.currentTarget as HTMLInputElement).value);
+  }
+
   return (
     <>
-      {list.map((rep, i) => (
+      <form name="filterNav">
+        <input
+          onChange={onChange}
+          placeholder="Profile Search"
+          type="text"
+          value={filterStr}
+        />
+      </form>
+
+      {list.filter(filterNav).map((rep, i) => (
         <ProfileShort
           key={`${i}-${rep.first_name}-${rep.last_name}`}
           onClick={(event: React.SyntheticEvent) => {

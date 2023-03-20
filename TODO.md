@@ -3,7 +3,6 @@
   [ ] refactor form fields into a component to test error messages in isolation
   [ ] make naiveSDK a singleton
   [ ] handle validation errors in the API responses
-  [ ] add cache expiry timing for localStorage
   [ ] fix error message display for "combined" fields: city, state, zip
   [ ] constrain aspect ratio of profile photo for consistency
   [ ] refactor useState in App to useReducer

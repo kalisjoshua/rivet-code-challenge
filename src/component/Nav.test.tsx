@@ -1,10 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Profile } from "../type/Profile";
 import { SDK } from "../util/naiveSDK";
 
 import { Nav } from "./Nav";
+
+const testingData: Array<Profile> = require("../util/testingData.json");
 
 describe("Nav", () => {
   const client = {
@@ -62,5 +64,36 @@ describe("Nav", () => {
     expect(setSelected).toHaveBeenCalledWith(list[0].id);
     expect(client.GET).toHaveBeenCalledWith(`/profile/${list[0].id}`);
     expect(updateList).toHaveBeenCalledWith(true);
+  });
+
+  test("filter nav list", async () => {
+    (client.GET as jest.Mock).mockImplementation(() => {
+      return Promise.resolve(testingData);
+    });
+
+    render(
+      <Nav
+        {...{ client, list: testingData, selected, setSelected, updateList }}
+      />
+    );
+
+    let navLinks = screen.getAllByText(/View/i);
+
+    expect(navLinks.length).toBe(testingData.length);
+
+    const element = screen.getByPlaceholderText("Profile Search");
+
+    expect(element).toHaveValue("");
+
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      await userEvent.type(element, "Currier");
+    });
+
+    expect(element).toHaveValue("Currier");
+
+    navLinks = screen.getAllByText(/View/i);
+
+    expect(navLinks.length).toBe(2);
   });
 });
