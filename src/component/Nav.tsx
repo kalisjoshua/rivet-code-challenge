@@ -20,7 +20,7 @@ function Nav({ client, list, selected, setSelected, updateList }: NavProps) {
           onClick={(event: React.SyntheticEvent) => {
             event.preventDefault();
             global.history.pushState(
-              {},
+              { id: rep.id.toString() },
               "",
               event.currentTarget.getAttribute("href")
             );

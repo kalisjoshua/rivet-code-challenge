@@ -6,7 +6,6 @@ import { Nav } from "./component/Nav";
 import { ProfileFullView } from "./component/ProfileFullView";
 import { emptyProfile, Profile } from "./type/Profile";
 import { formSubmitFactory } from "./util/profileSubmit";
-import { getRepId } from "./util/getRepId";
 import { clientFactory } from "./util/naiveSDK";
 
 import "./App.css";
@@ -24,7 +23,6 @@ function App({ repId, root, token: storedToken }: AppProps) {
       ? ({ ...structuredClone(emptyProfile), id: "new" } as Profile)
       : list.filter((rep) => rep.id.toString() === selected).at(0);
   const client = clientFactory(root, token);
-  // console.log([client.GET]);
   const updateList = (forceUpdate = false) => {
     const up = (s: string) => s.toUpperCase();
 
@@ -47,7 +45,8 @@ function App({ repId, root, token: storedToken }: AppProps) {
 
   useEffect(() => {
     window.addEventListener("popstate", (event) => {
-      setSelected(getRepId() || undefined);
+      console.log(event?.state?.id);
+      setSelected(event?.state?.id);
     });
   });
 
@@ -74,7 +73,7 @@ function App({ repId, root, token: storedToken }: AppProps) {
               onClick={(event: React.SyntheticEvent) => {
                 event.preventDefault();
                 global.history.pushState(
-                  {},
+                  { id: "new" },
                   "",
                   event.currentTarget.getAttribute("href")
                 );

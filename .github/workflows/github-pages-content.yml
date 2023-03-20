@@ -44,11 +44,14 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run tests
+        run: npm test:coverage
+
       - name: Build static assets
         run: npm run build
 
-      # - name: Debug
-      #   run: ls -al build/
+      - name: Move coverage folder
+        run: mv coverage/ build/
 
       - name: Create archive
         shell: bash

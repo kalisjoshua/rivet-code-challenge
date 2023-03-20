@@ -1,54 +1,61 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 
 import { Profile } from "../type/Profile";
-import { SDK } from "../util/naiveSDK";
 
 import { ProfileFullView } from "./ProfileFullView";
 
 describe("ProfileViewFull", () => {
-  const client = {
-    POST: jest.fn(),
-    PUT: jest.fn(),
-  } as unknown as SDK;
+  const rep: Profile = {
+    id: "",
+    first_name: "Ted",
+    last_name: "Lasso",
+    phone: "1238142020",
+    email: "ted@lasso.apple.plus",
+    address: "1 Nelson Rd",
+    city: "Richmond",
+    state: "Kansas",
+    zip: "54321",
+    photo: "",
+    notes: "",
+  };
 
-  afterEach(() => {
-    (client.POST as jest.Mock).mockClear();
-    (client.PUT as jest.Mock).mockClear();
+  function setup(formSubmit: jest.Mock) {
+    const view = render(<ProfileFullView {...{ formSubmit, rep }} />);
+
+    const button = screen.getByText(/(?:create)|(?:save)/i);
+    const input = screen.getByLabelText(/First Name/i);
+
+    return { ...view, button, input };
+  }
+
+  test("check enable/disable submit button", async () => {
+    const formSubmit = jest.fn(() => Promise.resolve());
+    const { button, input } = setup(formSubmit);
+
+    expect(button).toBeDisabled();
+
+    fireEvent.change(input, { target: { value: "testing change" } });
+
+    expect(button).not.toBeDisabled();
   });
 
-  test("valid new submit", async () => {
-    const rep: Profile = {
-      id: "new",
-      first_name: "Ted",
-      last_name: "Lasso",
-      phone: "1238142020",
-      email: "ted@lasso.apple.plus",
-      address: "1 Nelson Rd",
-      city: "Richmond",
-      state: "Kansas",
-      zip: "54321",
-      photo: "",
-      notes: "",
-    };
-    const formSubmit = jest.fn();
+  test("check call to parent submit on submit of valid form", async () => {
+    const formSubmit = jest.fn((e) => {
+      e.preventDefault();
 
-    render(<ProfileFullView {...{ formSubmit, rep }} />);
+      return Promise.resolve();
+    });
+    const { button, input } = setup(formSubmit);
 
-    // // const form = screen.getByRole("form");
-    // // fireEvent.submit(form);
-    // // screen.debug(form);
+    expect(formSubmit).not.toHaveBeenCalled();
 
-    // const input = screen.getByLabelText(/First Name/i);
+    fireEvent.change(input, { target: { value: "testing change" } });
 
-    // await userEvent.paste("Theodore");
-    // await userEvent.type(input, "{enter}");
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => {
+      await fireEvent.click(button);
+    });
 
-    // const button = screen.getByText(/Create/i);
-
-    // await userEvent.click(button);
-
-    // expect(formSubmit).toHaveBeenCalled();
-    // // expect(update).toHaveBeenCalled();
+    expect(formSubmit).toHaveBeenCalled();
   });
 });

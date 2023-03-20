@@ -2,11 +2,12 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import App from "./App";
+import { Profile } from "./type/Profile";
 import { clientFactory } from "./util/naiveSDK";
 
 jest.mock("./util/naiveSDK");
 
-const allProfiles = require("./util/testingData.json");
+const allProfiles: Array<Profile> = require("./util/testingData.json");
 
 const includesProfileFullView = (all: Array<HTMLElement>) =>
   all.map((form) => form.getAttribute("name")).includes("ProfileFullView");
@@ -22,7 +23,7 @@ test("renders the (default) about view", () => {
 test("handles rejected Promise from API call", () => {
   (clientFactory as jest.Mock).mockImplementation(() => {
     return {
-      GET: jest.fn((path: string) => Promise.reject()),
+      GET: jest.fn((_path: string) => Promise.reject()),
     };
   });
 
@@ -76,11 +77,20 @@ test("click Add Rep", async () => {
 
   expect(screen.queryByText("...developer challenge")).toBeNull();
   expect(includesProfileFullView(screen.queryAllByRole("form"))).toBe(true);
-  expect(pushStateSpy).toHaveBeenCalledWith({}, "", "?id=new");
+  expect(pushStateSpy).toHaveBeenCalledWith({ id: "new" }, "", "?id=new");
 });
 
 test("navigation between profiles", async () => {
+  const addEventListenerSpy = jest.spyOn(global, "addEventListener");
   const pushStateSpy = jest.spyOn(global.history, "pushState");
+  let rerender: (s: string) => void;
+
+  let addEventListenerHandler: EventListener;
+  addEventListenerSpy.mockImplementation(
+    (_eventName: string, fn: EventListenerOrEventListenerObject) => {
+      addEventListenerHandler = fn as EventListener;
+    }
+  );
 
   (clientFactory as jest.Mock).mockImplementation(() => {
     return {
@@ -92,17 +102,31 @@ test("navigation between profiles", async () => {
 
   // eslint-disable-next-line testing-library/no-unnecessary-act
   await act(async () => {
-    await render(<App repId="1" root="ROOT" token="abc123" />);
+    const { rerender: renderRerender } = await render(
+      <App repId="1" root="ROOT" token="abc123" />
+    );
+
+    rerender = (id: string) => {
+      renderRerender(<App repId={id} root="ROOT" token="abc123" />);
+    };
   });
 
   const profiles = screen.getAllByText(/^View$/i);
 
+  const testProfiles: Array<Profile> = profiles.map((el) => {
+    const id =
+      (el as unknown as { href: string }).href.match(/\d+$/)?.[0] || "";
+
+    return allProfiles.find((record) => record.id.toString() === id);
+  }) as Array<Profile>;
+
+  // console.log(screen.getByDisplayValue(testProfiles[0].first_name).value);
   expect(
-    screen.getByDisplayValue(allProfiles[0].first_name)
+    screen.getByDisplayValue(testProfiles[0].first_name)
   ).toBeInTheDocument();
 
   expect(
-    screen.queryByDisplayValue(allProfiles[1].first_name)
+    screen.queryByDisplayValue(testProfiles[1].first_name)
   ).not.toBeInTheDocument();
 
   // eslint-disable-next-line testing-library/no-unnecessary-act
@@ -110,26 +134,38 @@ test("navigation between profiles", async () => {
     await userEvent.click(profiles[1]);
   });
 
-  expect(pushStateSpy).toHaveBeenCalledWith({}, "", `?id=${allProfiles[1].id}`);
+  expect(pushStateSpy).toHaveBeenCalledWith(
+    { id: testProfiles[1].id },
+    "",
+    `?id=${testProfiles[1].id}`
+  );
 
+  // console.log(screen.getByDisplayValue(testProfiles[1].first_name).value);
   expect(
-    screen.getByDisplayValue(allProfiles[1].first_name)
+    screen.getByDisplayValue(testProfiles[1].first_name)
   ).toBeInTheDocument();
 
   expect(
-    screen.queryByDisplayValue(allProfiles[0].first_name)
+    screen.queryByDisplayValue(testProfiles[0].first_name)
   ).not.toBeInTheDocument();
 
-  // TODO: figure out back navigation test
+  // // TODO: figure out back navigation test
   // await act(async () => {
-  //   await global.history.back();
+  //   // await global.history.back();
+  //   await addEventListenerHandler({} as Event);
+  //   await rerender(testProfiles[0].id);
   // });
 
-  // expect(
-  //   screen.getByDisplayValue(allProfiles[0].first_name)
-  // ).toBeInTheDocument();
+  // // screen.debug();
 
-  // expect(
-  //   screen.queryByDisplayValue(allProfiles[1].first_name)
-  // ).not.toBeInTheDocument();
+  // // console.log(screen.getByText("...developer challenge"));
+  // console.log(screen.getByAltText("first_name").value);
+
+  // // expect(
+  // //   screen.getByDisplayValue(testProfiles[0].first_name)
+  // // ).toBeInTheDocument();
+
+  // // expect(
+  // //   screen.queryByDisplayValue(testProfiles[1].first_name)
+  // // ).not.toBeInTheDocument();
 });

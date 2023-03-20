@@ -1,5 +1,6 @@
 # Things I need to do
 
+  [ ] refactor form fields into a component to test error messages in isolation
   [ ] make naiveSDK a singleton
   [ ] handle validation errors in the API responses
   [ ] add cache expiry timing for localStorage

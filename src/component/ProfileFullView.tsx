@@ -17,30 +17,31 @@ type ProfileFullViewProps = {
  * @name MAX_NOTES_SIZE
  *
  * @description
- * # Max Notes Size
- * ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
- *
  * Javascript uses UTF-16 for string encoding
  * but isn't always consistent with the code unit sizing
  * we will use 16 as the code unit size
  * we will be conservative on the limit till there is a need to explore beyond it
  *
- * ## V8 (Chrome, Node, Edge, and others)
- * (2**29 - 24) for 64 bit systems = ~1GiB
- * (2**28 - 16) for 32 bit systems = ~512MiB
+ *   * __V8 (Chrome, Node, Edge, and others)__
+ *       - (2**29 - 24) for 64 bit systems = ~1GiB
+ *       - (2**28 - 16) for 32 bit systems = ~512MiB
+ *   * __Firefox__
+ *       - (2**30 - 2) for versions after 64 = ~2GiB
+ *       - (2**28 - 1) for versions before 65 = ~512MiB
+ *   * __Safari__
+ *       - (2**31 - 1) = ~4GiB
  *
- * ## Firefox
- * (2**30 - 2) for versions after 64 = ~2GiB
- * (2**28 - 1) for versions before 65 = ~512MiB
- *
- * ## Safari
- * (2**31 - 1) = ~4GiB
+ * source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
  */
 const MAX_NOTES_SIZE = Math.floor((2 ** 28 - 16) / 16);
 
-const formIsValid = (form: HTMLFormElement) =>
-  Array.from(new FormData(form)).filter(([name]) => !form[name].checkValidity())
-    .length === 0;
+type FormInput = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+function formIsValid(form: HTMLFormElement) {
+  return Array.from(form.elements).every((el) =>
+    (el as FormInput).checkValidity()
+  );
+}
 
 /**
  * @name ProfileFullView
@@ -56,11 +57,15 @@ function ProfileFullView({ formSubmit, rep }: ProfileFullViewProps) {
   });
 
   function onChange<T extends UpdatePayload>(event: React.SyntheticEvent<T>) {
-    setEnabled(formIsValid(formRef.current as unknown as HTMLFormElement));
-    formChanged(event.currentTarget);
+    // istanbul ignore else
+    if (formRef.current) {
+      setEnabled(formIsValid(formRef.current));
+      formChanged(event.currentTarget);
+    }
   }
 
   const onSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    // istanbul ignore else
     if (formIsValid(event.currentTarget)) {
       formSubmit(event)
         // on success of submitting the form disable the submit button

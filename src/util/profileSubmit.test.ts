@@ -1,24 +1,10 @@
 import { SDK } from "./naiveSDK";
 
+import { mockFormForTesting } from "./mockFormForTesting";
 import { formSubmitFactory } from "./profileSubmit";
 
-function createElement(type: string, name: string, value = "") {
-  const el = document.createElement(type);
-
-  el.setAttribute("name", name);
-
-  return el;
-}
-
 describe("Profile Submit", () => {
-  const currentTarget = createElement("form", "profile") as HTMLFormElement;
-  const event = {
-    currentTarget,
-    preventDefault: jest.fn(),
-  } as unknown as React.SyntheticEvent<HTMLFormElement>;
-  const input = createElement("input", "repId");
-
-  currentTarget.appendChild(input);
+  const [event, input] = mockFormForTesting();
 
   test("add rep", async () => {
     const clientMock = {
