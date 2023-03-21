@@ -68,8 +68,27 @@
     color: var(--rivet-blue);
     grid-area: nav;
     overflow-y: scroll;
+    position: relative;
 }
 
 .App-nav .help {
     padding: var(--padding);
+}
+
+.App-nav form[name="filterNav"] {
+    background: white;
+    border-bottom: 1px solid var(--rivet-orange);
+    padding: var(--padding);
+    position: fixed;
+    width: inherit;
+}
+
+.App-nav form[name="filterNav"] input {
+    font-size: inherit;
+    padding: 1ex;
+    width: 22rem;
+}
+
+.App-nav form[name="filterNav"] + * {
+    margin-top: 4em;
 }
