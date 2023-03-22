@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 
-import { FieldWrapper } from "./FieldWrapper";
+import { ProfileField } from "./ProfileField";
 import { Profile } from "../type/Profile";
 import { updateReducer, UpdatePayload } from "../util/profileEdit";
 import { formSubmitFactory } from "../util/profileSubmit";
@@ -90,225 +90,186 @@ function ProfileFullView({ formSubmit, rep }: ProfileFullViewProps) {
       onSubmit={onSubmit}
       ref={formRef}
     >
-      <FieldWrapper field="repId">
-        <label htmlFor="repId">ID</label>
-        <input
-          id="repId"
-          name="repId"
-          onChange={onChange<HTMLInputElement>}
-          disabled={true}
-          title="Not editable"
-          type="text"
-          value={/^new$/.test(data.id || "") ? "" : data.id}
-        />
-      </FieldWrapper>
+      <ProfileField /* id */
+        {...{
+          disabled: true,
+          errors: {},
+          errorText: {},
+          fieldName: "repId",
+          labelText: "ID",
+          type: "text",
+          value: /^new$/.test(data.id || "") ? "" : data.id,
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.first_name?.pattern || errors?.first_name?.required}
-        field="first_name"
-      >
-        <label htmlFor="first_name">First Name</label>
-        <input
-          id="first_name"
-          maxLength={255}
-          name="first_name"
-          onChange={onChange<HTMLInputElement>}
-          required
-          type="text"
-          value={data.first_name}
-        />
-        <p className="fieldError" data-visible={errors?.first_name?.required}>
-          The "First Name" field is required.
-        </p>
-      </FieldWrapper>
+      <ProfileField /* first_name */
+        {...{
+          errors: errors?.first_name || {},
+          errorText: {
+            required: "The 'First Name' field is required.",
+          },
+          fieldName: "first_name",
+          labelText: "First Name",
+          maxLength: 255,
+          onChange,
+          required: true,
+          type: "text",
+          value: data.first_name,
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.last_name?.pattern || errors?.last_name?.required}
-        field="last_name"
-      >
-        <label htmlFor="last_name">Last Name</label>
-        <input
-          id="last_name"
-          maxLength={255}
-          name="last_name"
-          onChange={onChange<HTMLInputElement>}
-          required
-          type="text"
-          value={data.last_name}
-        />
-        <p className="fieldError" data-visible={errors?.last_name?.required}>
-          The "Last Name" field is required.
-        </p>
-      </FieldWrapper>
+      <ProfileField /* last_name */
+        {...{
+          errors: errors?.last_name || {},
+          errorText: {
+            required: "The 'Last Name' field is required.",
+          },
+          fieldName: "last_name",
+          labelText: "Last Name",
+          maxLength: 255,
+          onChange,
+          required: true,
+          type: "text",
+          value: data.last_name,
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.phone?.pattern || errors?.phone?.required}
-        field="phone"
-      >
-        <label htmlFor="phone">Phone</label>
-        <input
-          id="phone"
-          maxLength={30}
-          name="phone"
-          onChange={onChange<HTMLInputElement>}
-          pattern="^(?:(?:\d{10,20})|(?:\d{3}-\d{3}-\d{4}))\d*$"
-          required
-          type="text"
-          value={data.phone}
-        />
-        <p className="fieldError" data-visible={errors?.phone?.required}>
-          The "Phone number" field is required.
-        </p>
-        <p className="fieldError" data-visible={errors?.phone?.pattern}>
-          The "Phone number" should be formatted as "##########" or
-          "###-###-####".
-        </p>
-      </FieldWrapper>
+      <ProfileField /* phone */
+        {...{
+          errors: errors?.phone || {},
+          errorText: {
+            pattern: `The "Phone" number should be formatted as "##########" or "###-###-####".`,
+            required: "The 'Phone' field is required.",
+          },
+          fieldName: "phone",
+          labelText: "Phone",
+          maxLength: 30,
+          onChange,
+          pattern: /^(?:(?:\d{10,20})|(?:\d{3}-\d{3}-\d{4}))\d*$/,
+          required: true,
+          type: "phone",
+          value: data.phone,
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.email?.pattern || errors?.email?.required}
-        field="email"
-      >
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          maxLength={255}
-          name="email"
-          onChange={onChange<HTMLInputElement>}
-          pattern=".+?@.+?"
-          required
-          type="email"
-          value={data.email}
-        />
-        <p className="fieldError" data-visible={errors?.email?.required}>
-          The "Email" field is required.
-        </p>
-        <p className="fieldError" data-visible={errors?.email?.pattern}>
-          The "Email" should be formatted simlar to "email_address@domain.tld".
-        </p>
-      </FieldWrapper>
+      <ProfileField /* email */
+        {...{
+          errors: errors?.email || {},
+          errorText: {
+            pattern: `The "Email" should be formatted simlar to "email_address@domain.tld".`,
+            required: "The 'Email' field is required.",
+          },
+          fieldName: "email",
+          labelText: "Email",
+          maxLength: 255,
+          onChange,
+          pattern: /^.+?@.+?$/,
+          required: true,
+          type: "email",
+          value: data.email,
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.address?.pattern || errors?.address?.required}
-        field="address"
-      >
-        <label htmlFor="address">Street Address</label>
-        <input
-          id="address"
-          maxLength={255}
-          name="address"
-          onChange={onChange<HTMLInputElement>}
-          required
-          type="text"
-          value={data.address}
-        />
-        <p className="fieldError" data-visible={errors?.address?.required}>
-          The "Street Address" field is required.
-        </p>
-      </FieldWrapper>
+      <ProfileField /* address */
+        {...{
+          errors: errors?.address || {},
+          errorText: {
+            required: "The 'Street Address' field is required.",
+          },
+          fieldName: "address",
+          labelText: "Street Address",
+          maxLength: 255,
+          onChange,
+          required: true,
+          type: "text",
+          value: data.address,
+        }}
+      />
 
       <div className="combined">
-        <FieldWrapper
-          error={errors?.city?.pattern || errors?.city?.required}
-          field="city"
-        >
-          <label htmlFor="city">City</label>
-          <input
-            id="city"
-            maxLength={255}
-            name="city"
-            onChange={onChange<HTMLInputElement>}
-            required
-            type="text"
-            value={data.city}
-          />
-          <p className="fieldError" data-visible={errors?.city?.required}>
-            The "City" field is required.
-          </p>
-        </FieldWrapper>
+        <ProfileField /* city */
+          {...{
+            errors: errors?.city || {},
+            errorText: {
+              required: "The 'City' field is required.",
+            },
+            fieldName: "city",
+            labelText: "City",
+            maxLength: 255,
+            onChange,
+            required: true,
+            type: "text",
+            value: data.city,
+          }}
+        />
 
-        <FieldWrapper
-          error={errors?.state?.pattern || errors?.state?.required}
-          field="state"
-        >
-          <label htmlFor="state">State</label>
-          <select
-            id="state"
-            name="state"
-            onChange={onChange<HTMLSelectElement>}
-            required
-            value={statesCleanValue(data.state || "")}
-          >
-            <option value="">Pick one</option>
-            {states.map(([abbr, full]) => (
-              <option key={full} value={abbr.toUpperCase()}>
-                {full}
-              </option>
-            ))}
-          </select>
-          <p className="fieldError" data-visible={errors?.state?.required}>
-            The "State" field is required.
-          </p>
-        </FieldWrapper>
+        <ProfileField /* state */
+          {...{
+            errors: errors?.state || {},
+            errorText: {
+              required: "The 'State' field is required.",
+            },
+            fieldName: "state",
+            labelText: "State",
+            onChange,
+            required: true,
+            selectOptions: states.map(([abbr, full]) => [
+              abbr.toUpperCase(),
+              full,
+            ]),
+            type: "select",
+            value: statesCleanValue(data.state || ""),
+          }}
+        />
 
-        <FieldWrapper
-          error={errors?.zip?.pattern || errors?.zip?.required}
-          field="zip"
-        >
-          <label htmlFor="zip">Zip</label>
-          <input
-            id="zip"
-            name="zip"
-            onChange={onChange<HTMLInputElement>}
-            pattern="^\d{5}(?:-?\d{4})?$"
-            required
-            type="phone"
-            value={data.zip}
-          />
-          <p className="fieldError" data-visible={errors?.zip?.pattern}>
-            The "Zip (Postal code)" field must formatted as "#####" or
-            "#####-####".
-          </p>
-          <p className="fieldError" data-visible={errors?.zip?.required}>
-            The "Zip (Postal code)" field is required.
-          </p>
-        </FieldWrapper>
+        <ProfileField /* zip */
+          {...{
+            errors: errors?.zip || {},
+            errorText: {
+              pattern: `The "Zip (Postal code)" field must formatted as "#####" or "#####-####".`,
+              required: "The 'Zip' (Postal Code) field is required.",
+            },
+            fieldName: "zip",
+            labelText: "Zip",
+            maxLength: 255,
+            onChange,
+            pattern: /^\d{5}(?:-?\d{4})?$/,
+            required: true,
+            type: "phone",
+            value: data.zip,
+          }}
+        />
       </div>
 
-      <FieldWrapper
-        error={errors?.photo?.pattern || errors?.photo?.required}
-        field="photo"
-      >
-        <label htmlFor="photo">Photo</label>
-        <input
-          id="photo"
-          maxLength={255}
-          name="photo"
-          onChange={onChange<HTMLInputElement>}
-          pattern="^https?:\/\/.{4,}"
-          type="URL"
-          value={data.photo || ""}
-        />
-        <p className="fieldError" data-visible={errors?.photo?.pattern}>
-          The "Photo" needs to be a valid URL or be left empty.
-        </p>
-      </FieldWrapper>
+      <ProfileField /* photo */
+        {...{
+          errors: errors?.photo || {},
+          errorText: {
+            pattern: `The "Photo" needs to be a valid URL or be left empty.`,
+          },
+          fieldName: "photo",
+          labelText: "Photo",
+          maxLength: 255,
+          onChange,
+          type: "url",
+          value: data.photo || "",
+        }}
+      />
 
-      <FieldWrapper
-        error={errors?.notes?.pattern || errors?.notes?.required}
-        field="notes"
-      >
-        <label htmlFor="notes">Notes</label>
-        <textarea
-          id="notes"
-          maxLength={MAX_NOTES_SIZE}
-          name="notes"
-          onChange={onChange<HTMLTextAreaElement>}
-          value={data.notes || ""}
-        ></textarea>
-      </FieldWrapper>
+      <ProfileField /* notes */
+        {...{
+          errors: errors?.notes || {},
+          errorText: {},
+          fieldName: "notes",
+          labelText: "Notes",
+          maxLength: MAX_NOTES_SIZE,
+          onChange,
+          type: "textarea",
+          value: data.notes || "",
+        }}
+      />
 
-      <button disabled={!buttonEnabled} type="submit">
+      <button {...(!buttonEnabled ? { disabled: true } : {})} type="submit">
         {data.id !== "new" ? "Save" : "Create"}
       </button>
     </form>

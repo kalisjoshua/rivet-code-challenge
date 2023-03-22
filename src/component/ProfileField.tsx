@@ -6,12 +6,13 @@ type EditableInputTypes =
   | HTMLTextAreaElement;
 
 interface ProfileFieldProps {
+  disabled?: boolean;
   errors: { [key in Errors]?: boolean };
   errorText: { [key in Errors]?: string };
   fieldName: string;
   labelText: string;
   maxLength?: number;
-  onChange: React.ChangeEventHandler<EditableInputTypes>;
+  onChange?: (event: React.SyntheticEvent<EditableInputTypes, Event>) => void;
   selectOptions?: Array<[string, string]>;
   pattern?: RegExp;
   required?: boolean;
@@ -33,27 +34,38 @@ function ProfileField(props: ProfileFieldProps) {
   return (
     <div className="formField" data-error={errors} data-field={props.fieldName}>
       <label htmlFor={props.fieldName}>{props.labelText}</label>
+
       {(function () {
+        const commonProps = {
+          ...(props.disabled ? { disabled: true } : {}),
+          id: props.fieldName,
+          ...(props.maxLength ? { maxLength: props.maxLength } : {}),
+          name: props.fieldName,
+          ...(props.pattern
+            ? { pattern: props.pattern?.toString().slice(1, -1) }
+            : {}),
+          ...(props.required ? { required: true } : {}),
+          value: props.value,
+        };
+
         switch (props.type) {
           case "textarea":
             return (
               <textarea
-                id={props.fieldName}
-                maxLength={props.maxLength}
-                name={props.fieldName}
-                onChange={props.onChange}
-                value={props.value}
+                {...commonProps}
+                onChange={
+                  props.onChange as React.ChangeEventHandler<HTMLTextAreaElement>
+                }
               ></textarea>
             );
           case "select-one": // intentional fallthrough
           case "select":
             return (
               <select
-                id={props.fieldName}
-                name={props.fieldName}
-                onChange={props.onChange}
-                required
-                value={props.value}
+                {...commonProps}
+                onChange={
+                  props.onChange as React.ChangeEventHandler<HTMLSelectElement>
+                }
               >
                 <option value="">Pick one</option>
                 {(props.selectOptions as Array<[string, string]>).map(
@@ -65,21 +77,19 @@ function ProfileField(props: ProfileFieldProps) {
                 )}
               </select>
             );
-          default:
+          default: // input
             return (
               <input
-                id={props.fieldName}
-                maxLength={props.maxLength}
-                name={props.fieldName}
-                onChange={props.onChange}
-                pattern={props.pattern?.toString() || ""}
-                required
+                {...commonProps}
+                onChange={
+                  props.onChange as React.ChangeEventHandler<HTMLInputElement>
+                }
                 type={props.type}
-                value={props.value}
               />
             );
         }
       })()}
+
       {(Object.keys(props.errorText) as Array<Errors>)
         .filter((key) => !!props.errors[key])
         .map((key) => (

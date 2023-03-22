@@ -50,6 +50,17 @@ describe("ProfileField", () => {
       runTests<HTMLInputElement>(element, props, /input/i, 0);
     });
 
+    test("disabled", () => {
+      props.disabled = true;
+
+      render(<ProfileField {...props} />);
+
+      const element = getElement<HTMLInputElement>(props.labelText);
+
+      runTests<HTMLInputElement>(element, props, /input/i, 0);
+      expect(element).toBeDisabled();
+    });
+
     test("required & valid", () => {
       props.errorText.required = "The 'First Name' field is required.";
       props.required = true;
